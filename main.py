@@ -1,17 +1,236 @@
 import sys
+import os
+
+from PyPDF2 import PdfFileMerger
 from PySide2.QtCore import Qt, Slot
 from PySide2.QtWidgets import (QApplication, QHBoxLayout, QVBoxLayout, QLabel,
                                QMainWindow, QPushButton, QWidget, QTabWidget,
-                               QAction)
+                               QAction, QFileDialog, QLineEdit, QListWidget,
+                               QAbstractItemView, QMessageBox)
 
-class centralWidget(QWidget):
+
+class ListWidget(QListWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent=None)
+        self.setAcceptDrops(True)
+        # self.setStyleSheet('font-size: 25px;')
+        self.setDragDropMode(QAbstractItemView.InternalMove)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+        else:
+            return super().dragEnterEvent(event)
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+        else:
+            return super().dragMoveEvent(event)
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+
+            pdf_files = []
+
+            for url in event.mimeData().urls():
+                if url.isLocalFile():
+                    if url.toString().endswith('.pdf'):
+                        pdf_files.append(str(url.toLocalFile()))
+            self.addItems(pdf_files)
+        else:
+            return super().dropEvent(event)
+
+
+class outputField(QLineEdit):
+    def __init__(self):
+        super().__init__()
+        # self.height = 55
+        # self.setStyleSheet('font-size: 30px;')
+        # self.setFixedHeight(self.height)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, e):
+        if e.mimeData().hasUrls():
+            e.setDropAction(Qt.CopyAction)
+            e.accept()
+        else:
+            e.ignore()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+
+            if event.mimeData().urls():
+                self.setText(event.mimeData().urls()[0].toLocalFile())
+        else:
+            event.ignore()
+# class outputField
+
+
+class button(QPushButton):
+    def __init__(self, label_text):
+        super().__init__()
+        self.setText(label_text)
+        """
+        self.setStyleSheet('''
+            font-size: 30px;
+            width: 180px;
+            height: 50px;
+        ''')
+        """
+
+
+class tabSinglePDFWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.layout = QVBoxLayout()
+        self.output_folder_layout = QHBoxLayout()
+        self.buttons_layout = QHBoxLayout()
+
+        # Creates and adds the QLineEdit output_file
+        self.output_file = outputField()
+        self.output_folder_layout.addWidget(self.output_file)
+
+        # Creates and adds a QPushButton to browse the output file
+        self.btn_browse = button('&Save to')
+        self.btn_browse.clicked.connect(self.populate_file_name)
+        self.output_folder_layout.addWidget(self.btn_browse)
+
+        # Creates the ListBox Widget
+        self.pdf_list_widget = ListWidget()
+
+        #Create the buttons
+        self.btn_delete = button('&Delete')
+        self.btn_merge = button('&Merge')
+        self.btn_close = button('&Close')
+        self.btn_reset = button('&Reset')
+
+        # Connect the buttons to the slots
+        self.btn_delete.clicked.connect(self.delete_selected)
+        self.btn_merge.clicked.connect(self.merge_file)
+        self.btn_close.clicked.connect(QApplication.quit)
+        self.btn_reset.clicked.connect(self.clear_queue)
+
+        # add the buttons to the layout
+        self.buttons_layout.addWidget(self.btn_delete, 1, Qt.AlignRight)
+        self.buttons_layout.addWidget(self.btn_merge)
+        self.buttons_layout.addWidget(self.btn_close)
+        self.buttons_layout.addWidget(self.btn_reset)
+
+        # adding the layouts and widgets to the main layout
+        self.layout.addLayout(self.output_folder_layout)
+        self.layout.addWidget(QLabel("Drop files here:"))
+        self.layout.addWidget(self.pdf_list_widget)
+        self.layout.addLayout(self.buttons_layout)
+        self.setLayout(self.layout)
+
+    def _get_saveto_file_path(self):
+        file_save_path, _ = QFileDialog.getSaveFileName(self,
+                                                        'Save PDF File', os.getcwd(),
+                                                        'PDF File (*.pdf)')
+        return file_save_path
+
+    @Slot()
+    def populate_file_name(self):
+        path = self._get_saveto_file_path()
+        if path:
+            self.output_file.setText(path)
+
+    @Slot()
+    def delete_selected(self):
+        for item in self.pdf_list_widget.selectedItems():
+            self.pdf_list_widget.takeItem(self.pdf_list_widget.row(item))
+
+    @Slot()
+    def clear_queue(self):
+        self.pdf_list_widget.clear()
+        self.output_file.setText('')
+
+    def dialog_message(self, message):
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle('ASSA PDF Merger')
+        dlg.setIcon(QMessageBox.Information)
+        dlg.setText(message)
+        dlg.show()
+
+    @Slot()
+    def merge_file(self):
+        if not self.output_file.text():
+            self.populate_file_name()
+            return
+        if self.pdf_list_widget.count() > 0:
+            pdf_merger = PdfFileMerger()
+            try:
+                for i in range(self.pdf_list_widget.count()):
+                    pdf_merger.append(self.pdf_list_widget.item(i).text())
+                pdf_merger.write(self.output_file.text())
+                pdf_merger.close()
+
+                self.pdf_list_widget.clear()
+                self.dialog_message('PDF Merge Completed!')
+            except Exception as e:
+                self.dialog_message(e)
+        else:
+            self.dialog_message('There are no files to merge')
+# class tabSinglePDFWidget
+
+class tabMassivePDFWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.layout = QVBoxLayout()
+        self.output_folder_layout = QHBoxLayout()
+        self.dest_folder_layout = QHBoxLayout()
+        self.buttons_layout = QHBoxLayout()
+
+        # QLineEdit for output_folder
+        self.output_folder = outputField()
+        self.output_folder_layout.addWidget(self.output_folder)
+
+        # Creates and adds a QPushButton to browse the output file
+        self.btn_browse = button('Save to')
+        self.btn_browse.clicked.connect(self.populate_file_name)
+        self.output_folder_layout.addWidget(self.btn_browse)
+
+        # Creates the ListBox Widget
+        self.pdf_list_widget = ListWidget()
+
+        self.layout.addLayout(self.output_folder_layout)
+        self.setLayout(self.layout)
+
+    def _get_saveto_path(self):
+        path = QFileDialog.getExistingDirectoryUrl(self, 'Save files to',
+                                                   os.getcwd(), )
+        return path
+
+    @Slot()
+    def populate_file_name(self):
+        path = self._get_saveto_path()
+        if path:
+            self.output_folder.setText(path.toString())
+
+
+class mainWidget(QWidget):
     def __init__(self):
         QWidget.__init__(self)
 
         # Adding the tabs
         self.mainTab = QTabWidget()
-        self.tabSinglePDF = QWidget()
-        self.tabMassivePDF = QWidget()
+        self.tabSinglePDF = tabSinglePDFWidget()
+        self.tabMassivePDF = tabMassivePDFWidget()
 
         self.mainTab.addTab(self.tabSinglePDF, "Single PDF")
         self.mainTab.addTab(self.tabMassivePDF, "Massive PDF")
@@ -51,7 +270,8 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     # Qt Application
     app = QApplication(sys.argv)
-    widget = centralWidget()
+    app.setStyle('macintosh')
+    widget = mainWidget()
     # QMainWindow using QWidget as central widget
     window = MainWindow(widget)
     window.resize(800, 600)

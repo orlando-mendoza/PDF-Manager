@@ -113,8 +113,25 @@ class PDFApp(QWidget):
 
     def initUI(self):
         mainLayout = QVBoxLayout()
+
+        self.mainTab = QTabWidget()
+        self.tabSinglePDF = QWidget()
+        self.tabMassivePDFMerger = QWidget()
+
+        self.mainTab.addTab(self.tabSinglePDF, "")
+        self.mainTab.addTab(self.tabMassivePDFMerger, "")
+
+
+        # Rows for the single PDF Tab
         outputFolderRow = QHBoxLayout()
         btnLayout = QHBoxLayout()
+
+        # Rows for the Massive Merger Tab
+        sourceDirRow = QHBoxLayout()
+        targetDirRow = QHBoxLayout()
+
+
+        mainLayout.addWidget(self.mainTab)
 
         self.outputFile = outputField()
         outputFolderRow.addWidget(self.outputFile)
@@ -133,7 +150,7 @@ class PDFApp(QWidget):
         btnLayout.addWidget(self.buttonDeleteSelect, 1, Qt.AlignRight)
 
         self.buttonMerge = button('&Unificar')
-        self.buttonMerge.clicked.connect(self.mergeFile)
+        self.buttonMerge.cli°cked.connect(self.mergeFile)
         btnLayout.addWidget(self.buttonMerge)
 
         self.buttonClose = button('&Cerrar')
@@ -143,6 +160,10 @@ class PDFApp(QWidget):
         self.buttonReset = button('&Reset')
         self.buttonReset .clicked.connect(self.clearQueue)
         btnLayout.addWidget(self.buttonReset)
+
+
+        # Adding tabs to mainLayout
+        mainLayout.addWidget(self.mainTab)
 
 
         mainLayout.addLayout(outputFolderRow)
