@@ -3,5 +3,8 @@ macholib==1.14
 PyInstaller==3.6
 PyPDF2==1.26.0
 PyQt5==5.15.0
-PyQt5-sip==12.8.0
-PyQt5-stubs==5.14.2.2
+
+pip~=20.1.1
+PySide2~=5.15.0
+shiboken2~=5.15.0
+setuptools~=47.1.1
