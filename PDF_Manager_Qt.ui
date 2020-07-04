@@ -20,7 +20,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
     <item>
      <widget class="QFrame" name="frame_tabs">
       <property name="frameShape">
@@ -54,21 +54,9 @@
           <attribute name="title">
            <string>Single PDF</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_3">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
-            <widget class="QFrame" name="frame">
+            <widget class="QFrame" name="outputFrame_2">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -104,7 +92,7 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QLineEdit" name="outputField">
+               <widget class="QLineEdit" name="listFrame">
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
@@ -121,6 +109,10 @@
                   <height>55</height>
                  </size>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true">width: 180px;
+height: 50px;</string>
+                </property>
                 <property name="text">
                  <string>Select File</string>
                 </property>
@@ -130,14 +122,14 @@
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="frame_2">
+            <widget class="QFrame" name="outputFrame">
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <layout class="QVBoxLayout" name="verticalLayout_2">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -151,7 +143,72 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QListWidget" name="listWidget"/>
+               <widget class="QListWidget" name="pdfListWidget"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="btnFrame">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">height: 70px;</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QPushButton" name="btnDeleteSelect">
+                <property name="styleSheet">
+                 <string notr="true">width: 180px;
+height: 50px;</string>
+                </property>
+                <property name="text">
+                 <string>Delete Selected</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnMerge">
+                <property name="styleSheet">
+                 <string notr="true">width: 180px;
+height: 50px;</string>
+                </property>
+                <property name="text">
+                 <string>Merge</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnClose">
+                <property name="styleSheet">
+                 <string notr="true">width: 180px;
+height: 50px;</string>
+                </property>
+                <property name="text">
+                 <string>Close</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnReset">
+                <property name="styleSheet">
+                 <string notr="true">width: 180px;
+height: 50px;</string>
+                </property>
+                <property name="text">
+                 <string>Reset</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
