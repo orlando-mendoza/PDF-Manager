@@ -8,7 +8,7 @@ from PySide2.QtCore import Qt, Slot
 from PySide2.QtWidgets import (QApplication, QHBoxLayout, QVBoxLayout, QLabel,
                                QMainWindow, QPushButton, QWidget, QTabWidget,
                                QAction, QFileDialog, QLineEdit, QListWidget,
-                               QAbstractItemView, QMessageBox)
+                               QAbstractItemView, QMessageBox, QStatusBar)
 
 
 class ListWidget(QListWidget):
@@ -306,6 +306,7 @@ class TabMassivePDFWidget(QWidget):
 
                         # str(str(self.source_folder.text() + poliza + '.pdf'))
                         print(f'file dest: {file_dest}')
+                        # self.setStatusTip(f'{file_dest}')
                         pdf_merger.write(file_dest)
                         pdf_merger.close()
                     self.dialogMessage('Massive Merge Completed', QMessageBox.Information)
@@ -337,10 +338,18 @@ class MainWidget(QWidget):
         self.mainTab.addTab(self.tabMassivePDF, "Massive PDF")
 
         # QWidget Layout
-        self.layout = QHBoxLayout()
+        self.layout = QVBoxLayout()
+
+        # QWidget Label
 
         # Add widget to the main layout
         self.layout.addWidget(self.mainTab)
+
+        # Add a label for Copyright
+        self.CopyRight =  QLabel("Created by Orlando J. Mendoza. Licensed under MIT License.")
+        self.CopyRight.setAlignment(Qt.AlignRight)
+
+        self.layout.addWidget(self.CopyRight)
 
         # Set the layout to the QWidget
         self.setLayout(self.layout)
@@ -355,6 +364,11 @@ class MainWindow(QMainWindow):
         self.menu = self.menuBar()
         self.file_menu = self.menu.addMenu("File")
 
+        # Status Bar
+        self.Status = QStatusBar()
+        #self.Status.showMessage("Created by Orlando J. Mendoza. Licensed under MIT License")
+        self.setStatusBar(self.Status)
+
         # Exit QAction
         exit_action = QAction("Exit", self)
         exit_action.setShortcut("Ctrl+Q")
@@ -362,6 +376,8 @@ class MainWindow(QMainWindow):
 
         self.file_menu.addAction(exit_action)
         self.setCentralWidget(widget)
+
+
 
     @Slot()
     def exit_app(self, checked):
