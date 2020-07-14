@@ -317,13 +317,12 @@ class TabMassivePDFWidget(QWidget):
                 polizas = list(set([x[0] for x in splitted_names]))
                 print(f'polizas : {polizas}')
 
-                i = 0  # to update the  progress dialog bar
-                progress = QProgressDialog("Unificando archivos...", "Abortar", 0, len(pdf_files), self)
+                progress = QProgressDialog("Unificando archivos...", "Abortar", 0, len(polizas), self)
                 progress.setWindowModality(Qt.WindowModal)
 
                 try:
                     for poliza in polizas:
-                        progress.setValue(i)
+                        progress.setValue(polizas.index(poliza))
                         pdf_merger = PdfFileMerger()
                         for part in order_list:
                             pattern = str(poliza + "[_\s]" + part + ".*")
@@ -333,7 +332,6 @@ class TabMassivePDFWidget(QWidget):
                             if file_name:
                                 fullfile_name = path.join(self.source_folder.text(), file_name[0])
                                 pdf_merger.append(fullfile_name)
-                                i += 1  # to increments the progress dialog
 
                         file_dest = path.join(self.dest_folder.text(), '.'.join([poliza, 'pdf']))
                         print(f'file dest: {file_dest}')
@@ -341,7 +339,7 @@ class TabMassivePDFWidget(QWidget):
                         pdf_merger.close()
                         if progress.wasCanceled():
                             break
-                    progress.setValue(len(pdf_files))
+                    progress.setValue(len(polizas))
                     self.dialog_message('La Unificación masiva ha concluído con éxito!', QMessageBox.Information)
                 except Exception as e:
                     self.dialog_message(str(e), QMessageBox.Warning)
