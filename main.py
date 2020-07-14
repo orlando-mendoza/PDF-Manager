@@ -274,55 +274,54 @@ class TabMassivePDFWidget(QWidget):
         if path.isdir(self.source_folder.text()):
             splitted_names, _ = self.load_files(self.source_folder.text())
             poliza_parts = list(set([x[1] for x in splitted_names]))
+            self.pdf_order_widget.clear()
             self.pdf_order_widget.addItems(poliza_parts)
         else:
-            self.dialogMessage('Source directory is empty or incorrect. '
-                               'Please correct or choose a source folder!', QMessageBox.Warning)
+            self.dialogMessage('La carpeta de origen está vacía o no es válida. '
+                               'Por favor seleccione una carpeta válida!', QMessageBox.Warning)
 
 
     @Slot()
     def massive_merge(self):
+        # Comprueba si la carpeta de destino y la carpeta de origen son válidas
+        # Carga los nombres en partes y los nombres de archivo completos
         if path.isdir(self.source_folder.text()) and path.isdir(self.dest_folder.text()):
             splitted_names, pdf_files = self.load_files(self.source_folder.text())
-            # order_list = [self.pdf_order_widget.findItems('', Qt.MatchRegExp)]
+
+            # Toma el orden de los archivos desde la lista del pdf_order_widget
             order_list = [str(self.pdf_order_widget.item(i).text())
                           for i in range(self.pdf_order_widget.count())]
+
             print(f'order list: {order_list}')
             if order_list:
+                # toma la lista con los números de póliza únicamente
                 polizas = list(set([x[0] for x in splitted_names]))
                 print(f'polizas : {polizas}')
                 try:
                     for poliza in polizas:
                         pdf_merger = PdfFileMerger()
                         for part in order_list:
-                            file_pattern = '_'.join([poliza, part])
-                            file_name = [s for s in pdf_files if file_pattern in s]
+                            pattern = str(poliza+"[_\s]" + part + ".*")
+                            r = re.compile(pattern)
+                            file_name = list(filter(r.match, pdf_files))
                             print(f'file_name: {file_name}')
                             if file_name:
                                 fullfile_name = path.join(self.source_folder.text(), file_name[0])
                                 pdf_merger.append(fullfile_name)
 
                         file_dest = path.join(self.dest_folder.text(), '.'.join([poliza, 'pdf']))
-
-                        # str(str(self.source_folder.text() + poliza + '.pdf'))
                         print(f'file dest: {file_dest}')
-                        # self.setStatusTip(f'{file_dest}')
                         pdf_merger.write(file_dest)
                         pdf_merger.close()
-                    self.dialogMessage('Massive Merge Completed', QMessageBox.Information)
+                    self.dialogMessage('La Unificación masiva ha concluído con éxito!', QMessageBox.Information)
                 except Exception as e:
                     self.dialogMessage(str(e))
             else:
-                self.dialogMessage('Order list is empty, please load files first!',
+                self.dialogMessage('La lista con el orden de las partes está vacía, por favor cargue los archivos!',
                                    QMessageBox.Warning)
         else:
-            self.dialogMessage('Source or destination directory is not a directory, '
-                               'please correct!', QMessageBox.Warning)
-
-        # try:
-        #
-        # except Exception as e:
-        #     self.dialogMessage(str(e))
+            self.dialogMessage('La carpeta de origen o destino es inválida, '
+                               'Por favor ingrese carpetas válidas!', QMessageBox.Warning)
 
 
 class MainWidget(QWidget):
@@ -376,8 +375,6 @@ class MainWindow(QMainWindow):
 
         self.file_menu.addAction(exit_action)
         self.setCentralWidget(widget)
-
-
 
     @Slot()
     def exit_app(self, checked):
