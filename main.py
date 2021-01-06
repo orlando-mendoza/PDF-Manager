@@ -280,11 +280,11 @@ class TabMassivePDFWidget(QWidget):
 
     def load_files(self, source_path):
         """ function receives a source path as parameter. Source path has to be previously checked as dir,
-        then loads the file names and split acoording to the regex_pattern
+        then loads the file names and split according to the regex_pattern
         returns file names sepparated by regex_pattern and a list of pdf file names """
-        # source_path = "/Users/omendoza/GitHub/Python/UnificarPDFs/resources/polizas/caratulas"
+        source_path = "/Users/omendozar/dev/python/PDFManager/resources/CARATULAS_ELECTRONICAS"
         pdf_files = [f for f in os.listdir(source_path) if f.endswith('.pdf')]
-        delimiters = "_", " ", "."
+        delimiters = "_", " ", ".", "  ", "   ", " - ", "-", "(", ")"
         regex_pattern = '|'.join(map(re.escape, delimiters))
         splitted_names = [re.split(regex_pattern, x) for x in pdf_files]
         return splitted_names, pdf_files
