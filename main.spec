@@ -3,10 +3,10 @@
 block_cipher = None
 
 
-a = Analysis(['PDF_Manager.py'],
-             pathex=['Y:\\GitHub\\Python\\PDF_Manager'],
+a = Analysis(['main.py'],
+             pathex=['Z:\\dev\\python\\PDF_Manager'],
              binaries=[],
-             datas=[('Y:\\GitHub\\Python\\PDF_Manager\\pdf.png', '.')],
+             datas=[],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -23,11 +23,11 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='ASSA PDF Merger',
+          name='main',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False , icon='')
+          console=True )

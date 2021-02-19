@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['Main.py'],
-             pathex=['Z:\\GitHub\\Python\\PDF_Manager'],
+             pathex=['Z:\\dev\\Python\\PDF_Manager'],
              binaries=[],
-             datas=[('Z:\\GitHub\\Python\\PDF_Manager\\pdf.ico', '.')],
+             datas=[('Z:\\dev\\Python\\PDF_Manager\\pdf.ico', '.')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -30,4 +30,4 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False, icon='Z:\\GitHub\\Python\\PDF_Manager\\pdf.ico' )
+          console=False, icon='Z:\\dev\\Python\\PDF_Manager\\pdf.ico' )
