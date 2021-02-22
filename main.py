@@ -3,7 +3,8 @@ import os
 import re
 
 from os import path
-from PyPDF2 import PdfFileMerger
+# from PyPDF2 import PdfFileMerger
+from pdfrw import PdfReader, PdfWriter
 from PySide2.QtCore import Qt, Slot
 from PySide2.QtWidgets import (QApplication, QHBoxLayout, QVBoxLayout, QLabel,
                                QMainWindow, QPushButton, QWidget, QTabWidget,
@@ -172,12 +173,12 @@ class TabSinglePDFWidget(QWidget):
             self.populate_file_name()
             return
         if self.pdf_list_widget.count() > 0:
-            pdf_merger = PdfFileMerger()
+            pdf_merger = PdfWriter()
             try:
                 for i in range(self.pdf_list_widget.count()):
-                    pdf_merger.append(self.pdf_list_widget.item(i).text())
+                    pdf_merger.addpages(PdfReader(self.pdf_list_widget.item(i).text()).pages)
                 pdf_merger.write(self.output_file.text())
-                pdf_merger.close()
+                #pdf_merger.close()
 
                 self.pdf_list_widget.clear()
                 self.dialog_message('Unificación completada!')
@@ -323,7 +324,7 @@ class TabMassivePDFWidget(QWidget):
                 try:
                     for poliza in polizas:
                         progress.setValue(polizas.index(poliza))
-                        pdf_merger = PdfFileMerger()
+                        pdf_merger = PdfWriter()
                         for part in order_list:
                             pattern = str(poliza + "[_\s]" + part + ".*")
                             r = re.compile(pattern)
@@ -331,12 +332,12 @@ class TabMassivePDFWidget(QWidget):
                             print(f'file_name: {file_name}')
                             if file_name:
                                 fullfile_name = path.join(self.source_folder.text(), file_name[0])
-                                pdf_merger.append(fullfile_name)
+                                pdf_merger.addpages(PdfReader(fullfile_name).pages)
 
                         file_dest = path.join(self.dest_folder.text(), '.'.join([poliza, 'pdf']))
                         print(f'file dest: {file_dest}')
                         pdf_merger.write(file_dest)
-                        pdf_merger.close()
+                        # pdf_merger.close()
                         if progress.wasCanceled():
                             break
                     progress.setValue(len(polizas))
