@@ -1,3 +1,3 @@
 # PDF-Manager
 
-Utility for merging PDFs writen in Python PySide2.
+Utility for merging PDFs writen in Python pdfrw.
